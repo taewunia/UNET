@@ -1,2 +1,2 @@
 # UNET
-unit from scratch(for studying)
+unet from scratch(for studying)
