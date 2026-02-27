@@ -1,18 +1,10 @@
 import torch
-import numpy as np
-import torch.optim as optim
-from torch.utils.data import DataLoader
 import torch.nn as nn
-from torch.utils.tensorboard import SummaryWriter
-from torchvision import transforms, datasets
 import os
 device = torch.device('mps' if torch.backends.mps.is_available() else 'cpu')
 os.environ['PYTORCH_ENABLE_MPS_FALLBACK'] = '1'
 print(device)
 
-EPOCH = 50
-LR = 1e-3
-BATCH_SIZE = 64
 
 class UNet(nn.Module):
     def __init__(self):

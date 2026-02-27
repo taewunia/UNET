@@ -1,12 +1,9 @@
 import torch
-import numpy as np
 import os
-from torchvision import transforms
 import cv2
-import matplotlib.pyplot as plt
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 
 train_transform = A.Compose([
     A.Resize(height=256, width=256),
@@ -37,7 +34,7 @@ class PreProcess(Dataset):
         return len(os.listdir(self.image_dir))
 
     def __getitem__(self, idx):
-        image_path = os.path.join(self.image_dir, self.image[idx])
+        image_path = os.path.join(self.image_dir, self.images[idx])
         mask_path = os.path.join(self.mask_dir, self.masks[idx])
 
         image = cv2.imread(image_path)
@@ -53,5 +50,5 @@ class PreProcess(Dataset):
 
         mask = torch.unsqueeze(mask, dim=0)
 
-        return image, mask
 
+        return image, mask
