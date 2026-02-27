@@ -55,7 +55,3 @@ class PreProcess(Dataset):
 
         return image, mask
 
-
-TRAIN_IMAGE_DIR = "./data/train"
-TRAIN_MASK_DIR = "./data/train_mask"
-
