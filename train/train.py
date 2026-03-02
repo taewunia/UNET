@@ -1,14 +1,13 @@
 from model.unet import UNet
-from config.config import TRAIN_IMAGE_DIR, TRAIN_MASK_DIR, VAL_IMAGE_DIR, VAL_MASK_DIR, TEST_IMAGE_DIR, TEST_MASK_DIR, LR, EPOCH, BATCH_SIZE, DEVICE, visualize_prediction, DiceLoss
+from config.config import TRAIN_IMAGE_DIR, TRAIN_MASK_DIR, VAL_IMAGE_DIR, VAL_MASK_DIR, TEST_IMAGE_DIR, TEST_MASK_DIR, LR, EPOCH, BATCH_SIZE, DEVICE
 from utils.pre_process import PreProcess, train_transform, val_transform
+from utils.diceloss_visualize import DiceLoss, visualize_prediction
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import matplotlib.pyplot as plt
-import numpy as np
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-import numpy as np
 
 if DEVICE == 'mps':
     device = torch.device('mps')
@@ -52,8 +51,8 @@ for epoch in range(EPOCH):
         optimizer.step()
         total_train_loss += loss.item()
         tqdm.set_postfix(train_bar, loss=loss.item())
+    avg_train_loss = total_train_loss / len(train_bar)
     loss_history.append(avg_train_loss)
-    avg_train_loss = total_train_loss / len(train_DS)
     model.eval()
     for val_batch, val_labels in val_bar:
         val_batch, val_labels = val_batch.to(device), val_labels.to(device)
@@ -63,12 +62,12 @@ for epoch in range(EPOCH):
         loss = val_loss_bce + val_loss_dice
         total_val_loss += loss.item()
         tqdm.set_postfix(val_bar, loss=loss.item())
-    avg_val_loss = total_val_loss / len(val_DS)
+    avg_val_loss = total_val_loss / len(val_bar)
     val_loss_history.append(avg_val_loss)
     print(f'.\navg_train_loss: {avg_train_loss:.4f}, avg_val_loss: {avg_val_loss:.4f}')
     print('-'*40)
+    visualize_prediction(model, device, val_DL)
 
-    visualize_prediction(model, val_DL, device)
 plt.plot(range(1, len(loss_history) + 1), loss_history, label='train loss', color='green')
 plt.title("avg_train_loss")
 plt.xlabel("epoch")
@@ -76,7 +75,7 @@ plt.ylabel("train_loss")
 plt.legend()
 plt.show()
 
-plt.plot(range(1, len(val_loss_history) + 1), val_loss_history, label='train loss', color='green')
+plt.plot(range(1, len(val_loss_history) + 1), val_loss_history, label='val loss', color='red')
 plt.title("avg_train_loss")
 plt.xlabel("epoch")
 plt.ylabel("train_loss")
