@@ -7,8 +7,8 @@ TEST_MASK_DIR = "/Users/choetaewon/Documents/GitHub/UNET/datasets/test_DS/test_l
 VAL_IMAGE_DIR = "/Users/choetaewon/Documents/GitHub/UNET/datasets/val_DS/val"
 VAL_MASK_DIR = "/Users/choetaewon/Documents/GitHub/UNET/datasets/val_DS/val_labels"
 
-EPOCH = 30
-LR = 1e-4
+EPOCH = 50
+LR = 1e-3
 BATCH_SIZE = 16
 DEVICE = "mps"
 
