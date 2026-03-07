@@ -18,16 +18,16 @@ class DiceLoss(nn.Module):
         return 1 - dice
 
 
-class MultiDiceLoss(nn.module):
+class MultiDiceLoss(nn.Module):
     def __init(self, smooth=1e-6):
         super().__init__()
 
 
-def visualize_prediction(model, device, val_DL):
+def visualize_prediction(model, device, data):
     model.eval()
     with torch.no_grad():
         model = model.to(device)
-        input, mask = next(iter(val_DL))
+        input, mask = next(iter(data))
         input = input[0]
         mask = mask[0]
         input = input.to(device)

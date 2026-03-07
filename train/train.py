@@ -66,7 +66,7 @@ for epoch in range(EPOCH):
     val_loss_history.append(avg_val_loss)
     print(f'.\navg_train_loss: {avg_train_loss:.4f}, avg_val_loss: {avg_val_loss:.4f}')
     print('-'*40)
-    visualize_prediction(model, device, val_DL)
+    visualize_prediction(model, device, test_DL)
 
 plt.plot(range(1, len(loss_history) + 1), loss_history, label='train loss', color='green')
 plt.title("avg_train_loss")
