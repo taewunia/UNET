@@ -219,8 +219,8 @@ print("텐서 충돌 X")
 train_DS = Dataset(image_dir=train_image_dir, mask_dir=train_mask_dir, transform=train_transform)
 val_DS = Dataset(image_dir=val_image_dir, mask_dir=val_mask_dir, transform=val_transform)
 
-train_DL = DataLoader(train_DS, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
-val_DL = DataLoader(val_DS, batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
+train_DL = DataLoader(train_DS, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
+val_DL = DataLoader(val_DS, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
 
 optimizer = optim.Adam(model.parameters(), lr=LR)
 
