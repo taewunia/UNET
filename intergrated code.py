@@ -88,8 +88,10 @@ def visualize_prediction(model=None, device=None, DL=None):
     mask = mask[0]
     image = image.unsqueeze(dim=0) # b, c, h, w
     image = image.to(device)
+    model.eval()
     model = model.to(device)
     pred = model(image)
+    pred = pred.sigmoid()
     pred = (pred>0.5).float()    # b, c, h, w
 
     image = image.squeeze(dim=0)# c, h, w
@@ -103,9 +105,9 @@ def visualize_prediction(model=None, device=None, DL=None):
     mask = (mask * 0.5) + 0.5
     pred = (pred * 0.5) + 0.5
 
-    np.clip(image, 0, 1)
-    np.clip(mask, 0, 1)
-    np.clip(pred, 0, 1)
+    image = np.clip(image, 0, 1)
+    mask = np.clip(mask, 0, 1)
+    pred = np.clip(pred, 0, 1)
 
     plt.figure(figsize=(15, 5))
     plt.subplot(1, 3, 1)
@@ -125,6 +127,7 @@ def visualize_prediction(model=None, device=None, DL=None):
 
     plt.tight_layout()
     plt.show()
+    model.train()
 
 class UNet(nn.Module):
     def __init__(self):
@@ -216,8 +219,8 @@ print("텐서 충돌 X")
 train_DS = Dataset(image_dir=train_image_dir, mask_dir=train_mask_dir, transform=train_transform)
 val_DS = Dataset(image_dir=val_image_dir, mask_dir=val_mask_dir, transform=val_transform)
 
-train_DL = DataLoader(train_DS, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
-val_DL = DataLoader(val_DS, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
+train_DL = DataLoader(train_DS, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
+val_DL = DataLoader(val_DS, batch_size=BATCH_SIZE, shuffle=False, num_workers=2)
 
 optimizer = optim.Adam(model.parameters(), lr=LR)
 
@@ -250,14 +253,15 @@ for epoch in range(EPOCH):
     avg_train_loss = total_train_loss / len(train_bar)
     train_history.append(avg_train_loss)
     model.eval()
-    for val_batch, val_labels in val_bar:
-        val_batch, val_labels = val_batch.to(device), val_labels.to(device)
-        val_pred = model(val_batch)
-        val_loss_bce = criterion_BCE(val_pred, val_labels)
-        val_loss_dice = criterion_DICE(val_pred, val_labels)
-        loss = val_loss_bce + val_loss_dice
-        total_val_loss += loss.item()
-        tqdm.set_postfix(val_bar, loss=loss.item())
+    with torch.no_grad():
+        for val_batch, val_labels in val_bar:
+            val_batch, val_labels = val_batch.to(device), val_labels.to(device)
+            val_pred = model(val_batch)
+            val_loss_bce = criterion_BCE(val_pred, val_labels)
+            val_loss_dice = criterion_DICE(val_pred, val_labels)
+            loss = val_loss_bce + val_loss_dice
+            total_val_loss += loss.item()
+            tqdm.set_postfix(val_bar, loss=loss.item())
     avg_val_loss = total_val_loss / len(val_bar)
     val_history.append(avg_val_loss)
     print(f'.\navg_train_loss: {avg_train_loss:.4f}, avg_val_loss: {avg_val_loss:.4f}')

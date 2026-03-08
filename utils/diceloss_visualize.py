@@ -33,6 +33,7 @@ def visualize_prediction(model, device, data):
         input = input.to(device)
         input = input.unsqueeze(dim=0)
         pred = model(input)    # c h w
+        pred = pred.sigmoid()
         pred = (pred > 0.5).float()
 
         input = input.squeeze(0)
@@ -64,6 +65,7 @@ def visualize_prediction(model, device, data):
 
         plt.tight_layout()
         plt.show()
+    model.train()
 
 
 

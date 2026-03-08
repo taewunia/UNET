@@ -54,14 +54,15 @@ for epoch in range(EPOCH):
     avg_train_loss = total_train_loss / len(train_bar)
     loss_history.append(avg_train_loss)
     model.eval()
-    for val_batch, val_labels in val_bar:
-        val_batch, val_labels = val_batch.to(device), val_labels.to(device)
-        val_pred = model(val_batch)
-        val_loss_bce = criterion_bce(val_pred, val_labels)
-        val_loss_dice = criterion_dice(val_pred, val_labels)
-        loss = val_loss_bce + val_loss_dice
-        total_val_loss += loss.item()
-        tqdm.set_postfix(val_bar, loss=loss.item())
+    with torch.no_grad():
+        for val_batch, val_labels in val_bar:
+            val_batch, val_labels = val_batch.to(device), val_labels.to(device)
+            val_pred = model(val_batch)
+            val_loss_bce = criterion_bce(val_pred, val_labels)
+            val_loss_dice = criterion_dice(val_pred, val_labels)
+            loss = val_loss_bce + val_loss_dice
+            total_val_loss += loss.item()
+            tqdm.set_postfix(val_bar, loss=loss.item())
     avg_val_loss = total_val_loss / len(val_bar)
     val_loss_history.append(avg_val_loss)
     print(f'.\navg_train_loss: {avg_train_loss:.4f}, avg_val_loss: {avg_val_loss:.4f}')
