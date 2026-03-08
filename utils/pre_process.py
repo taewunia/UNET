@@ -21,7 +21,7 @@ val_transform = A.Compose([
 ])
 
 class PreProcess(Dataset):
-    def __init__(self, image_dir, mask_dir, transform=None):
+    def __init__(self, image_dir=None, mask_dir=None, transform=None):
         super().__init__()
         self.image_dir = image_dir
         self.mask_dir = mask_dir
@@ -48,8 +48,6 @@ class PreProcess(Dataset):
             image = augmentations["image"]
             mask = augmentations["mask"]
             mask = mask.clone().detach().float()
-
-        mask = torch.unsqueeze(mask, dim=0)
-
+            mask = torch.unsqueeze(mask, dim=0)
 
         return image, mask
