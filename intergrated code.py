@@ -263,13 +263,13 @@ for epoch in range(EPOCH):
             val_loss = val_loss_bce + val_loss_dice
             total_val_loss += val_loss.item()
             tqdm.set_postfix(val_bar, loss=val_loss.item())
-            scheduler.step(val_loss)
-            print("lr: ", optimizer.param_groups[0]['lr'])
     avg_val_loss = total_val_loss / len(val_bar)
     val_history.append(avg_val_loss)
     print(f'.\navg_train_loss: {avg_train_loss:.4f}, avg_val_loss: {avg_val_loss:.4f}')
     print('-'*40)
     visualize_prediction(model, device, val_DL)
+    scheduler.step(avg_val_loss)
+    print("lr: ", optimizer.param_groups[0]['lr'])
 
 plt.plot(range(1, len(train_history) + 1), train_history, label='train loss', color='green')
 plt.title("avg_train_loss")
