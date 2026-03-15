@@ -37,7 +37,7 @@ val_transform = A.Compose([
     ToTensorV2(),
 ])
 
-class Dataset(Dataset):
+class Custom_DataSet(Dataset):
     def __init__(self, image_dir=None, mask_dir=None, transform=None):
         super().__init__()
         self.image_dir = image_dir
@@ -216,8 +216,8 @@ print(f"입력 차원: {dummy_input.shape}")
 print(f"출력 차원: {dummy_output.shape} -> (Batch, Channel, Height, Width)")
 print("텐서 충돌 X")
 
-train_DS = Dataset(image_dir=train_image_dir, mask_dir=train_mask_dir, transform=train_transform)
-val_DS = Dataset(image_dir=val_image_dir, mask_dir=val_mask_dir, transform=val_transform)
+train_DS = Custom_DataSet(image_dir=train_image_dir, mask_dir=train_mask_dir, transform=train_transform)
+val_DS = Custom_DataSet(image_dir=val_image_dir, mask_dir=val_mask_dir, transform=val_transform)
 
 train_DL = DataLoader(train_DS, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
 val_DL = DataLoader(val_DS, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
