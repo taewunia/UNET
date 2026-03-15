@@ -223,6 +223,7 @@ train_DL = DataLoader(train_DS, batch_size=BATCH_SIZE, shuffle=True, num_workers
 val_DL = DataLoader(val_DS, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
 
 optimizer = optim.Adam(model.parameters(), lr=LR)
+scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, "min")
 
 criterion_BCE = nn.BCEWithLogitsLoss()
 criterion_DICE = DiceLoss(smooth=1e-6)
@@ -259,9 +260,11 @@ for epoch in range(EPOCH):
             val_pred = model(val_batch)
             val_loss_bce = criterion_BCE(val_pred, val_labels)
             val_loss_dice = criterion_DICE(val_pred, val_labels)
-            loss = val_loss_bce + val_loss_dice
-            total_val_loss += loss.item()
-            tqdm.set_postfix(val_bar, loss=loss.item())
+            val_loss = val_loss_bce + val_loss_dice
+            total_val_loss += val_loss.item()
+            tqdm.set_postfix(val_bar, loss=val_loss.item())
+            scheduler.step(val_loss)
+            print("lr: ", optimizer.param_groups[0]['lr'])
     avg_val_loss = total_val_loss / len(val_bar)
     val_history.append(avg_val_loss)
     print(f'.\navg_train_loss: {avg_train_loss:.4f}, avg_val_loss: {avg_val_loss:.4f}')
